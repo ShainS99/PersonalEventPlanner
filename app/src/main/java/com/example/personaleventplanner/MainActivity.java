@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         NavHostFragment navHostFragment = (NavHostFragment)
@@ -35,5 +37,10 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
 
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
+
+        // database
+        EventDatabase db = Room.databaseBuilder(getApplicationContext(),
+                EventDatabase.class, "event_database").build();
     }
+
 }
