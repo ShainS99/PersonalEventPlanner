@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,8 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class AddEventFragment extends Fragment {
+public class EditEventFragment extends Fragment {
+
     private EventDao eventDao;
 
     private EditText titleEditText;
@@ -34,14 +36,15 @@ public class AddEventFragment extends Fragment {
 
     private Button selectDateButton;
     private Button selectTimeButton;
-    private Button saveEventButton;
+    private Button updateEventButton;
 
     private Calendar selectedDateTime;
     private boolean dateChosen = false;
     private boolean timeChosen = false;
 
+    private int eventId;
 
-    public AddEventFragment() {
+    public EditEventFragment() {
         // Required empty public constructor
     }
 
@@ -49,7 +52,7 @@ public class AddEventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_event, container, false);
+        return inflater.inflate(R.layout.fragment_edit_event, container, false);
     }
 
     @Override
@@ -64,11 +67,12 @@ public class AddEventFragment extends Fragment {
         selectedDateTimeTextView = view.findViewById(R.id.selectedDateTimeTextView);
         selectDateButton = view.findViewById(R.id.selectDateButton);
         selectTimeButton = view.findViewById(R.id.selectTimeButton);
-        saveEventButton = view.findViewById(R.id.saveEventButton);
+        updateEventButton = view.findViewById(R.id.updateEventButton);
 
         selectedDateTime = Calendar.getInstance();
 
         setupCategorySpinner();
+        loadEventData();
         setupListeners();
     }
 
@@ -85,10 +89,38 @@ public class AddEventFragment extends Fragment {
         categorySpinner.setAdapter(adapter);
     }
 
+    private void loadEventData() {
+        Bundle bundle = getArguments();
+
+        if (bundle != null) {
+            eventId = bundle.getInt("eventId");
+            String title = bundle.getString("title");
+            String category = bundle.getString("category");
+            String location = bundle.getString("location");
+            long dateTimeMillis = bundle.getLong("dateTimeMillis");
+
+            titleEditText.setText(title);
+            locationEditText.setText(location);
+
+            String[] categories = {"Work", "Social", "Travel", "Personal", "Other"};
+            for (int i = 0; i < categories.length; i++) {
+                if (categories[i].equals(category)) {
+                    categorySpinner.setSelection(i);
+                    break;
+                }
+            }
+
+            selectedDateTime.setTimeInMillis(dateTimeMillis);
+            dateChosen = true;
+            timeChosen = true;
+            updateDateTimeText();
+        }
+    }
+
     private void setupListeners() {
         selectDateButton.setOnClickListener(v -> showDatePicker());
         selectTimeButton.setOnClickListener(v -> showTimePicker());
-        saveEventButton.setOnClickListener(v -> saveEvent());
+        updateEventButton.setOnClickListener(v -> updateEvent());
     }
 
     private void showDatePicker() {
@@ -154,7 +186,7 @@ public class AddEventFragment extends Fragment {
         }
     }
 
-    private void saveEvent() {
+    private void updateEvent() {
         String title = titleEditText.getText().toString();
         String category = categorySpinner.getSelectedItem().toString();
         String location = locationEditText.getText().toString();
@@ -177,16 +209,18 @@ public class AddEventFragment extends Fragment {
         }
 
         Event event = new Event(title, category, location, selectedDateTime.getTimeInMillis());
+        event.setId(eventId);
 
         // Create an executor service
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
         // Run the operation on the thread
         executorService.execute(() -> {
-            eventDao.insert(event);
+            eventDao.update(event);
 
             requireActivity().runOnUiThread(() -> {
-                Toast.makeText(requireContext(), "Event created", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Event updated", Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(EditEventFragment.this).navigateUp();
             });
         });
     }

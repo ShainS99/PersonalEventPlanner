@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#6BAD55"
-    tools:context=".AddEventFragment">
+    tools:context=".EditEventFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -20,11 +20,11 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/addEventTitleTextView"
+                android:id="@+id/editEventTitleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="Add Event"
+                android:text="Edit Event"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -114,12 +114,12 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/saveEventButton"
+                android:id="@+id/updateEventButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:backgroundTint="#298E1C"
-                android:text="Save Event" />
+                android:text="Update Event" />
 
         </LinearLayout>
     </ScrollView>

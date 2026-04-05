@@ -3,6 +3,7 @@ package com.example.personaleventplanner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,9 +16,11 @@ import java.util.Locale;
 public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecyclerViewAdapter.ViewHolder>
 {
     private List<Event> eventList;
+    private EventListFragment fragment;
 
-    public EventRecyclerViewAdapter(List<Event> eventList) {
+    public EventRecyclerViewAdapter(List<Event> eventList, EventListFragment fragment) {
         this.eventList = eventList;
+        this.fragment = fragment;
     }
 
     public void setEventList(List<Event> eventList) {
@@ -45,6 +48,9 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         String formattedDate = formatter.format(event.getDateTimeMillis());
         holder.eventDateTimeTextView.setText("Date: " + formattedDate);
+
+        holder.editButton.setOnClickListener(v -> fragment.editEvent(event));
+        holder.deleteButton.setOnClickListener(v -> fragment.deleteEvent(event));
     }
 
     @Override
@@ -58,6 +64,8 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         TextView eventCategoryTextView;
         TextView eventLocationTextView;
         TextView eventDateTimeTextView;
+        Button editButton;
+        Button deleteButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,6 +74,8 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
             eventCategoryTextView = itemView.findViewById(R.id.eventCategoryTextView);
             eventLocationTextView = itemView.findViewById(R.id.eventLocationTextView);
             eventDateTimeTextView = itemView.findViewById(R.id.eventDateTimeTextView);
+            editButton = itemView.findViewById(R.id.editButton);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }
